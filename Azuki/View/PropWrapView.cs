@@ -532,7 +532,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
-		public override void Paint( IGraphics g, Rectangle clipRect )
+		public override void Paint(IGraphics g, Rectangle clipRect, bool IsInlineDiff)
 		{
 			Debug.Assert( FontInfo != null, "invalid state; FontInfo is null" );
 			Debug.Assert( Document != null, "invalid state; Document is null" );
@@ -573,7 +573,7 @@ namespace Sgry.Azuki
 					shouldRedraw1 = _UI.InvokeLineDrawing( g, i, pos );
 
 					// draw the line
-					DrawLine( g, i, pos, clipRect );
+					DrawLine(g, i, pos, clipRect, IsInlineDiff);
 
 					// invoke post-draw event
 					shouldRedraw2 = _UI.InvokeLineDrawn( g, i, pos );
@@ -593,7 +593,7 @@ namespace Sgry.Azuki
 			g.FillRectangle( 0, pos.Y, VisibleSize.Width, VisibleSize.Height-pos.Y );
 			for( int y=pos.Y; y<VisibleSize.Height; y+=LineSpacing )
 			{
-				DrawLeftOfLine( g, y, -1, false );
+				DrawLeftOfLine(g, y, -1, false, IsInlineDiff);
 			}
 
 			// flush drawing results BEFORE updating current line highlight
@@ -624,7 +624,7 @@ namespace Sgry.Azuki
 			}
 		}
 
-		void DrawLine( IGraphics g, int lineIndex, Point pos, Rectangle clipRect )
+		void DrawLine(IGraphics g, int lineIndex, Point pos, Rectangle clipRect, bool IsInlineDiff)
 		{
 			Debug.Assert( this.FontInfo != null );
 			Debug.Assert( this.Document != null );
@@ -665,7 +665,7 @@ namespace Sgry.Azuki
 					drawsText = ( Document.GetLineHeadIndex(lineIndexToDraw) == lineHead );
 				}
 
-				DrawLeftOfLine( g, pos.Y, lineIndexToDraw+1, drawsText );
+				DrawLeftOfLine(g, pos.Y, lineIndexToDraw + 1, drawsText, IsInlineDiff);
 				clipRect.Width -= (XofTextArea - clipRect.X);
 				clipRect.X = XofTextArea;
 			}

@@ -47,10 +47,10 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Azuki\Azuki.vs2010.csproj">
-      <Project>{a93a1cad-4d87-4c24-9448-9fe90f98d2fa}</Project>
-      <Name>Azuki.vs2010</Name>
-    </ProjectReference>
+    <Reference Include="AzukiF, Version=1.7.10.26001, Culture=neutral, PublicKeyToken=46b77eb7f2d82aba, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Azuki\bin\Debug\AzukiF.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -89,7 +89,9 @@
     <Compile Include="DocumentListForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SearchPanel.cs" />
+    <Compile Include="SearchPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="DrawingOptionForm.cs">
       <SubType>Form</SubType>
     </Compile>

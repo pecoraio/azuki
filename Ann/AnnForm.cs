@@ -50,6 +50,7 @@ namespace Sgry.Ann
 			_TabPanel.ActiveTabBackColor = _Azuki.ColorScheme.LineNumberBack;
 			_TimerForDelayedActivatedEvent.Interval = 100;
 			_TimerForDelayedActivatedEvent.Tick += Form_DelayedActivated;
+            _Azuki.IsInlineDiff = true;
 		}
 		#endregion
 

@@ -11,7 +11,7 @@
     </AppDesignerFolder>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>Sgry.Azuki</RootNamespace>
-    <AssemblyName>Azuki</AssemblyName>
+    <AssemblyName>AzukiF</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Azuki.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
@@ -44,7 +44,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Release\Azuki.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\AzukiF.xml</DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>

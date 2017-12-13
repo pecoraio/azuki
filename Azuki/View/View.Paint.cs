@@ -16,7 +16,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
-		public abstract void Paint( IGraphics g, Rectangle clipRect );
+        public abstract void Paint(IGraphics g, Rectangle clipRect, bool IsInlineDiff);
 
 		#region Drawing graphical units of view
 		/// <summary>
@@ -449,7 +449,7 @@ namespace Sgry.Azuki
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="lineNumber">line number to be drawn.</param>
 		/// <param name="drawsText">specify true if line number text should be drawn.</param>
-		protected void DrawLeftOfLine( IGraphics g, int lineTopY, int lineNumber, bool drawsText )
+		protected void DrawLeftOfLine( IGraphics g, int lineTopY, int lineNumber, bool drawsText ,bool InlineDiff=false)
 		{
 			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
 			Point pos = new Point( XofLineNumberArea, lineTopY );
@@ -481,13 +481,18 @@ namespace Sgry.Azuki
 				Point textPos;
 
 				// calculate text position
-				lineNumText = lineNumber.ToString();
-				pos.X = XofDirtBar - g.MeasureText( lineNumText ).Width - LineNumberAreaPadding;
+                if (InlineDiff)
+    				lineNumText = ((lineNumber+1)/2).ToString();
+                else
+                    lineNumText = lineNumber.ToString();
+
+                pos.X = XofDirtBar - g.MeasureText(lineNumText).Width - LineNumberAreaPadding;
 				textPos = pos;
 				textPos.Y += (LinePadding >> 1);
 
 				// draw text
-				g.DrawText( lineNumText, ref textPos, Utl.ForeColorOfLineNumber(ColorScheme) );
+                if (!InlineDiff || lineNumber % 2 ==1)
+				    g.DrawText( lineNumText, ref textPos, Utl.ForeColorOfLineNumber(ColorScheme) );
 			}
 
 			// draw margin line between the line number area and text area

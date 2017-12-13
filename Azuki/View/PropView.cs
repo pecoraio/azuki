@@ -568,7 +568,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
-		public override void Paint( IGraphics g, Rectangle clipRect )
+		public override void Paint(IGraphics g, Rectangle clipRect, bool IsInlineDiff)
 		{
 			// [*1] if the graphic of a line should be redrawn by owner draw,
 			// Azuki does not redraw the line but invalidate
@@ -614,7 +614,7 @@ namespace Sgry.Azuki
 					shouldRedraw1 = _UI.InvokeLineDrawing( g, i, pos );
 
 					// draw the line
-					DrawLine( g, i, pos, clipRect, ref longestLineLength );
+                    DrawLine(g, i, pos, clipRect, ref longestLineLength, IsInlineDiff);
 
 					// invoke post-draw event
 					shouldRedraw2 = _UI.InvokeLineDrawn( g, i, pos );
@@ -638,7 +638,7 @@ namespace Sgry.Azuki
 			g.FillRectangle( XofTextArea, pos.Y, VisibleSize.Width-XofTextArea, VisibleSize.Height-pos.Y );
 			for( int y=pos.Y; y<VisibleSize.Height; y+=LineSpacing )
 			{
-				DrawLeftOfLine( g, y, -1, false );
+				DrawLeftOfLine(g, y, -1, false, IsInlineDiff);
 			}
 
 			// flush drawing results BEFORE updating current line highlight
@@ -667,7 +667,7 @@ namespace Sgry.Azuki
 			}
 		}
 
-		void DrawLine( IGraphics g, int lineIndex, Point pos, Rectangle clipRect, ref int longestLineLength )
+		void DrawLine( IGraphics g, int lineIndex, Point pos, Rectangle clipRect, ref int longestLineLength ,bool IsInlineDiff)
 		{
 			// note that given pos is NOT virtual position BUT screen position.
 			string token;
@@ -802,7 +802,7 @@ namespace Sgry.Azuki
 			}
 
 			// draw graphics at left of text
-			DrawLeftOfLine( g, pos.Y, lineIndex+1, true );
+			DrawLeftOfLine(g, pos.Y, lineIndex + 1, true, IsInlineDiff);
 		}
 		#endregion
 	}

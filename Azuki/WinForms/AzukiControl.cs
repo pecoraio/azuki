@@ -1171,6 +1171,16 @@ namespace Sgry.Azuki.WinForms
 			get{ return _AcceptsTab; }
 			set{ _AcceptsTab = value; }
 		}
+        /// <summary>
+        /// Inline Diff Mode (linenumber increment at 2)
+        /// </summary>
+        [Browsable(true)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public bool IsInlineDiff 
+        {
+            get { return _Impl.IsInlineDiff; }
+            set { _Impl.IsInlineDiff = value; }
+        }
 
 		/// <summary>
 		/// Gets whether Azuki is in line selection mode or not.

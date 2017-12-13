@@ -274,6 +274,8 @@ namespace Sgry.Azuki
 				_UI.Invalidate();
 			}
 		}
+		public bool IsInlineDiff { get; set; }
+		
 
 		public AutoIndentHook AutoIndentHook
 		{
@@ -661,7 +663,7 @@ namespace Sgry.Azuki
 			// draw view graphic
 			using( var g = _UI.GetIGraphics() )
 			{
-				_View.Paint( g, clipRect );
+				_View.Paint(g, clipRect, IsInlineDiff);
 			}
 
 			// If any characters which were not highlighted after last edit were drawn,
