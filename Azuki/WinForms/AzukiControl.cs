@@ -708,7 +708,7 @@ namespace Sgry.Azuki.WinForms
 				// apply
 				WinApi.SetWindowLong( Handle, WinApi.GWL_STYLE, new IntPtr(style) );
 				WinApi.SetWindowPos( Handle, IntPtr.Zero, Left, Top, Width, Height, WinApi.SWP_FRAMECHANGED );
-				UpdateScrollBarRange();
+                UpdateScrollBarRange();
 			}
 		}
 
@@ -741,7 +741,7 @@ namespace Sgry.Azuki.WinForms
 			// apply
 			WinApi.SetWindowLong( Handle, WinApi.GWL_STYLE, new IntPtr(style) );
 			WinApi.SetWindowPos( Handle, IntPtr.Zero, Left, Top, Width, Height, WinApi.SWP_FRAMECHANGED );
-		}
+        }
 
 		/// <summary>
 		/// Gets or sets whether to show 'dirt bar' or not.
@@ -1897,6 +1897,11 @@ namespace Sgry.Azuki.WinForms
 			View.ScrollToCaret();
 		}
 
+        [System.Runtime.InteropServices.DllImportAttribute("uxtheme.dll")]
+        private static extern int SetWindowTheme(
+            IntPtr hwnd, string subAppName, string subIdList);
+
+
 		/// <summary>
 		/// Updates scrollbar's range.
 		/// </summary>
@@ -1917,7 +1922,12 @@ namespace Sgry.Azuki.WinForms
 			{
 				vMax += vPageSize - 1;
 			}
+            if (_ShowsHScrollBar == false)
+            {
 
+                SetWindowTheme(Handle, "", "");
+                Invalidate();
+            }
 			// calculate horizontal range and page size
 			hMax = View.TextAreaWidth;
 			hPageSize = Math.Max( 0, View.VisibleTextAreaSize.Width );
