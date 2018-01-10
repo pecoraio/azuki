@@ -199,13 +199,13 @@ namespace Sgry.Azuki
 			IView view = ui.View;
 			Point pt;
 			int nextIndex;
-			int diff = (view.VisibleSize.Height / view.LineSpacing);
+			int diff = (view.VisibleSize.Height / view.GetLineSpaceAvg());
 
 			// get current virtual coordinate of the caret
 			pt = view.GetVirPosFromIndex( doc.CaretIndex );
 			
 			// calc new virtual coordinate of the caret
-			pt.Y += diff * view.LineSpacing;
+			pt.Y += diff * view.GetLineSpaceAvg();
 			/*NOT_NEEDED
 			if( view.VisibleSize.Height < pt.Y )
 			{
@@ -230,13 +230,13 @@ namespace Sgry.Azuki
 			IView view = ui.View;
 			Point pt;
 			int nextIndex;
-			int diff = (view.VisibleSize.Height / view.LineSpacing);
+			int diff = (view.VisibleSize.Height / view.GetLineSpaceAvg());
 
 			// get current virtual coordinate of the caret
 			pt = view.GetVirPosFromIndex( doc.CaretIndex );
 			
 			// calc new virtual coordinate of the caret
-			pt.Y -= diff * view.LineSpacing;
+			pt.Y -= diff * view.GetLineSpaceAvg();
 			if( pt.Y < 0 )
 			{
 				pt.Y = 0;
@@ -453,13 +453,12 @@ namespace Sgry.Azuki
 			IView view = ui.View;
 			Point pt;
 			int nextIndex;
-			int diff = (view.VisibleSize.Height / view.LineSpacing);
-
+            int diff = (view.VisibleSize.Height / view.GetLineSpaceAvg());
 			// get current virtual coordinate of the caret
 			pt = view.GetVirPosFromIndex( doc.CaretIndex );
 			
 			// calc new virtual coordinate of the caret
-			pt.Y += diff * view.LineSpacing;
+            pt.Y += diff * view.GetLineSpaceAvg();
 			/*NOT_NEEDED
 			if( view.VisibleSize.Height < pt.Y )
 			{
@@ -483,13 +482,13 @@ namespace Sgry.Azuki
 			IView view = ui.View;
 			Point pt;
 			int nextIndex;
-			int diff = (view.VisibleSize.Height / view.LineSpacing);
+            int diff = (view.VisibleSize.Height / view.GetLineSpaceAvg());
 
 			// get current virtual coordinate of the caret
 			pt = view.GetVirPosFromIndex( doc.CaretIndex );
 			
 			// calc new virtual coordinate of the caret
-			pt.Y -= diff * view.LineSpacing;
+            pt.Y -= diff * view.GetLineSpaceAvg();
 			if( pt.Y < 0 )
 			{
 				pt.Y = 0;

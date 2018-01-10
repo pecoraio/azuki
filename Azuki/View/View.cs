@@ -647,11 +647,11 @@ namespace Sgry.Azuki
 		/// </summary>
 		public Point ScrollPos
 		{
-			get{ return new Point(ScrollPosX, FirstVisibleLine * LineSpacing); }
+            get { return new Point(ScrollPosX, FirstVisibleLine * GetLineSpaceAvg()); }
 			set
 			{
 				ScrollPosX = value.X;
-				FirstVisibleLine = (value.Y / LineSpacing);
+                FirstVisibleLine = (value.Y / GetLineSpaceAvg());
 				Invalidate();
 			}
 		}
@@ -814,7 +814,7 @@ namespace Sgry.Azuki
 		public void VirtualToScreen( ref Point pt )
 		{
 			pt.X = (pt.X - ScrollPosX) + XofTextArea;
-			pt.Y = (pt.Y - FirstVisibleLine * LineSpacing) + YofTextArea;
+            pt.Y = (pt.Y - FirstVisibleLine * GetLineSpaceAvg()) + YofTextArea;
 		}
 
 		/// <summary>
@@ -823,7 +823,7 @@ namespace Sgry.Azuki
 		public void VirtualToScreen( ref Rectangle rect )
 		{
 			rect.X = (rect.X - ScrollPosX) + XofTextArea;
-			rect.Y = (rect.Y - FirstVisibleLine * LineSpacing) + YofTextArea;
+            rect.Y = (rect.Y - FirstVisibleLine * GetLineSpaceAvg()) + YofTextArea;
 		}
 
 		/// <summary>
@@ -832,7 +832,7 @@ namespace Sgry.Azuki
 		public void ScreenToVirtual( ref Point pt )
 		{
 			pt.X = (pt.X + ScrollPosX) - XofTextArea;
-			pt.Y = (pt.Y + FirstVisibleLine * LineSpacing) - YofTextArea;
+            pt.Y = (pt.Y + FirstVisibleLine * GetLineSpaceAvg()) - YofTextArea;
 		}
 
 		/// <summary>
@@ -880,7 +880,7 @@ namespace Sgry.Azuki
 			// get text in the rect
 			leftPos.X = selRect.Left;
 			rightPos.X = selRect.Right;
-			y = selRect.Top - (selRect.Top % LineSpacing);
+            y = selRect.Top - (selRect.Top % GetLineSpaceAvg());
 			while( y <= selRectBottom )
 			{
 				// calculate sub-selection range made with this line
@@ -899,7 +899,7 @@ namespace Sgry.Azuki
 				selRanges.Add( rightIndex );
 
 				// go to next line
-				y += LineSpacing;
+    		    y += GetLineSpaceFromNumber(GetLineIndexFromCharIndex(leftIndex));
 			}
 
 			return selRanges.ToArray();
@@ -994,8 +994,21 @@ namespace Sgry.Azuki
 		{
 			ScrollToCaret( g, UserPref.AutoScrollMargin );
 		}
-
-		/// <summary>
+        public int GetLineSpaceAvg()
+        {
+            if (IsInlineDiff)
+                return LineHeight + LineSpacing;
+            else
+                return LineSpacing;
+        }
+        public int GetLineSpaceFromNumber(int LineNumber)
+        {
+            if (IsInlineDiff && LineNumber % 2 == 0)
+                return LineHeight+1;
+            else
+                return LineSpacing;
+        } 
+        /// <summary>
 		/// Scroll to where the caret is.
 		/// </summary>
 		public void ScrollToCaret( IGraphics g, int autoScrollMargin )
@@ -1006,14 +1019,14 @@ namespace Sgry.Azuki
 
 			// make rentangle of virtual text view
 			threshRect.X = ScrollPosX + SpaceWidthInPx;
-            threshRect.Y = FirstVisibleLine * LineSpacing;
+            threshRect.Y = FirstVisibleLine * GetLineSpaceAvg();
 			threshRect.Width = (_VisibleSize.Width - XofTextArea) - (SpaceWidthInPx * 2);
 			threshRect.Height = (_VisibleSize.Height - YofTextArea) - LineSpacing;
 
 			// shrink the rectangle if some lines must be visible
 			if( 0 < autoScrollMargin )
 			{
-                int yMargin = Math.Max(0, autoScrollMargin *  LineSpacing);
+                int yMargin = Math.Max(0, autoScrollMargin * GetLineSpaceAvg());
 				threshRect.Y += yMargin;
 				threshRect.Height -= (yMargin * 2);
 			}
@@ -1045,8 +1058,9 @@ namespace Sgry.Azuki
 			vDelta = 0;
 			if( threshRect.Bottom <= caretPos.Y )
 			{
+                var LineIndex = GetLineIndexFromCharIndex(Document.CaretIndex);
 				// scroll down
-				vDelta = (caretPos.Y + LineSpacing) - threshRect.Bottom;
+				vDelta = (caretPos.Y + GetLineSpaceFromNumber(LineIndex)) - threshRect.Bottom;
 			}
 			else if( caretPos.Y < threshRect.Top )
 			{
@@ -1055,7 +1069,7 @@ namespace Sgry.Azuki
 			}
 
 			// scroll the view
-            Scroll(vDelta / LineSpacing);
+            Scroll(vDelta / GetLineSpaceAvg());
 			HScroll( hDelta );
 
 			// update horizontal ruler graphic.
@@ -1089,7 +1103,7 @@ namespace Sgry.Azuki
 			}
 			else
 			{
-				visibleLineCount = VisibleSize.Height / LineSpacing;
+                visibleLineCount = VisibleSize.Height / GetLineSpaceAvg();
 				maxLineIndex = Math.Max( 0, LineCount-visibleLineCount+1 );
 			}
 
@@ -1114,7 +1128,7 @@ namespace Sgry.Azuki
 
 			// do scroll
 			FirstVisibleLine += delta;
-			_UI.Scroll( clipRect, 0, -(delta * LineSpacing) );
+            _UI.Scroll(clipRect, 0, -(delta * GetLineSpaceAvg()));
 			_UI.UpdateCaretGraphic();
 
 			_UI.InvokeVScroll();
@@ -1625,7 +1639,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		internal int YofLine( int lineIndex )
 		{
-			return (  (lineIndex - FirstVisibleLine) * LineSpacing  ) + YofTextArea;
+            return ((lineIndex - FirstVisibleLine) * GetLineSpaceAvg()) + YofTextArea;
 		}
 
 		int EolCodeWidthInPx

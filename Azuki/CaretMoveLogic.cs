@@ -118,7 +118,8 @@ namespace Sgry.Azuki
 
 			// calculate next location
 			pt.X = view.GetDesiredColumn();
-			pt.Y += view.LineSpacing;
+            var LineIndex =doc.GetLineIndexFromCharIndex(doc.CaretIndex);
+             pt.Y += view.GetLineSpaceFromNumber(LineIndex);
 			/* NOT NEEDED because View.GetIndexFromVirPos handles this case.
 			if( view.Height - view.LineSpacing < pt.Y )
 			{
@@ -133,7 +134,8 @@ namespace Sgry.Azuki
 			if( doc.SelectionMode == TextDataType.Line
 				&& view.IsLineHeadIndex(newIndex) )
 			{
-				Point pt2 = new Point( pt.X, pt.Y+view.LineSpacing );
+				Point pt2 = new Point( pt.X, pt.Y+view.GetLineSpaceFromNumber(LineIndex) );
+
 				int skippedNewIndex = view.GetIndexFromVirPos( pt2 );
 				if( skippedNewIndex == doc.AnchorIndex )
 				{
@@ -156,10 +158,11 @@ namespace Sgry.Azuki
 
 			// get screen location of the caret
 			pt = view.GetVirPosFromIndex( doc.CaretIndex );
+            var LineIndex = doc.GetLineIndexFromCharIndex(doc.CaretIndex);
 
 			// calculate next location
 			pt.X = view.GetDesiredColumn();
-			pt.Y -= view.LineSpacing;
+			pt.Y -= view.GetLineSpaceFromNumber(LineIndex);
 			newIndex = view.GetIndexFromVirPos( pt );
 			if( newIndex < 0 )
 			{
@@ -174,7 +177,7 @@ namespace Sgry.Azuki
 				&& newIndex == doc.AnchorIndex
 				&& view.IsLineHeadIndex(newIndex) )
 			{
-				pt.Y -= view.LineSpacing;
+				pt.Y -= view.GetLineSpaceFromNumber(LineIndex);
 				if( 0 <= pt.Y )
 				{
 					newIndex = view.GetIndexFromVirPos( pt );

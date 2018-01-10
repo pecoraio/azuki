@@ -185,7 +185,6 @@ namespace Sgry.Azuki
 						break;
 				}
 				_ViewType = value;
-                //_View.IsInlineDiff = IsInlineDiff;
 
 				// dispose old view object
 				if( oldView != null )
@@ -1223,7 +1222,7 @@ namespace Sgry.Azuki
 			int index;
 
 			// calculate line-index of last visible line
-			visibleLineCount = View.VisibleSize.Height / View.LineSpacing;
+			visibleLineCount = View.VisibleSize.Height / View.GetLineSpaceAvg();
 			lastDrawnLineIndex = View.FirstVisibleLine + visibleLineCount + 1;
 			if( View.LineCount <= lastDrawnLineIndex )
 			{

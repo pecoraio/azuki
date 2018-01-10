@@ -505,7 +505,7 @@ namespace Sgry.Azuki
 					doc.Replace( padding.ToString() + rowText, insertIndex, insertIndex );
 
 					// goto next line
-					insertPos.Y += ui.LineSpacing;
+					insertPos.Y += ui.View.GetLineSpaceFromNumber(ui.View.GetLineIndexFromCharIndex(insertIndex));
 					rowBegin = rowEnd;
 					rowEnd = TextUtil.NextLineHead( clipboardText, rowBegin );
 				}

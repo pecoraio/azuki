@@ -639,6 +639,8 @@ namespace Sgry.Azuki
 			get; set;
 		}
         bool IsInlineDiff { get; set; }
+        int GetLineSpaceAvg();
+        int GetLineSpaceFromNumber(int LineNumber);
 
 		#endregion
 

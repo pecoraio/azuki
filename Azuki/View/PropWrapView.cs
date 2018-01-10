@@ -147,9 +147,10 @@ namespace Sgry.Azuki
 			{
 				// get position of the replacement
 				oldCaretVirPos = GetVirPosFromIndex( g, e.Index );
+                var LineIndex = GetLineIndexFromCharIndex(e.Index);
 				if( IsWrappedLineHead(doc, PLHI, e.Index) )
 				{
-					oldCaretVirPos.Y -= LineSpacing;
+					oldCaretVirPos.Y -= GetLineSpaceFromNumber(LineIndex);
 					if( oldCaretVirPos.Y < 0 )
 					{
 						oldCaretVirPos.X = 0;
@@ -187,7 +188,7 @@ namespace Sgry.Azuki
 				}
 				invalidRect1.Y = oldCaretVirPos.Y - (LinePadding >> 1);
 				invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
-				invalidRect1.Height = LineSpacing;
+                invalidRect1.Height = GetLineSpaceFromNumber(LineIndex);
 				VirtualToScreen( ref invalidRect1 );
 
 				// invalidate all lines below caret
@@ -220,7 +221,7 @@ namespace Sgry.Azuki
 					//NO_NEED//invalidRect2.X = 0;
 					invalidRect2.Y = invalidRect1.Bottom;
 					invalidRect2.Width = VisibleSize.Width;
-					invalidRect2.Height = (logLineBottom + LineSpacing) - invalidRect2.Top;
+                    invalidRect2.Height = (logLineBottom + GetLineSpaceFromNumber(LineIndex)) - invalidRect2.Top;
 				}
 
 				// invalidate the range
@@ -263,7 +264,7 @@ namespace Sgry.Azuki
 			{
 				return;
 			}
-			bottom.Y += LineSpacing;
+            bottom.Y += GetLineSpaceFromNumber(logLineIndex);
 
 			// prevent to draw on horizontal ruler
 			if( top.Y < YofTextArea )
@@ -277,7 +278,7 @@ namespace Sgry.Azuki
 			bottom.Y -= (LinePadding >> 1);
 
 			// overdraw dirt bar
-            for (int y = top.Y; y < bottom.Y; y += LineSpacing)
+            for (int y = top.Y; y < bottom.Y; y += GetLineSpaceFromNumber(logLineIndex))
             {
 				DrawDirtBar( g, y, logLineIndex );
 			}
@@ -565,13 +566,13 @@ namespace Sgry.Azuki
 			for( int i=FirstVisibleLine; i<LineCount; i++ )
 			{
                 var lp = LinePadding;
-                if (pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y + LineSpacing)
+                if (pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y + GetLineSpaceFromNumber(i))
 				{
-                    if (IsInlineDiff && i % 2 == 1)
-                    {
-                        g.FillRectangle(pos.X, pos.Y, clipRect.Right - pos.X, LineSpacing);
-                        LinePadding = 0;
-                    }
+                    //if (IsInlineDiff && i % 2 == 1)
+                    //{
+                    //    g.FillRectangle(pos.X, pos.Y, clipRect.Right - pos.X, GetLineSpaceFromNumber(i));
+                    //    LinePadding = 0;
+                    //}
 
 					// reset x-coord of drawing position
 					pos.X = -(ScrollPosX - XofTextArea);
@@ -592,13 +593,15 @@ namespace Sgry.Azuki
 						Invalidate( 0, clipRect.Y, VisibleSize.Width, clipRect.Height );
 					}
 				}
-                if (IsInlineDiff && i % 2 == 0)
-                    pos.Y += LineHeight;
-                else
-                {
-                    g.FillRectangle(pos.X, pos.Y + LineHeight, clipRect.Right - pos.X, LinePadding);
-                    pos.Y += LineSpacing;
-                }
+                pos.Y += GetLineSpaceFromNumber(i);
+
+                //if (IsInlineDiff && i % 2 == 0)
+                //    pos.Y += LineHeight;
+                //else
+                //{
+                //    g.FillRectangle(pos.X, pos.Y + LineHeight, clipRect.Right - pos.X, LinePadding);
+                //    pos.Y += LineSpacing;
+                //}
                 LinePadding = lp;
 
             }
@@ -632,7 +635,7 @@ namespace Sgry.Azuki
 
 				// calculate position of the underline
 				caretLine = TextUtil.GetLineIndexFromCharIndex( PLHI, Document.CaretIndex );
-				caretPosY = YofTextArea + (caretLine - FirstVisibleLine) * LineSpacing;
+				caretPosY = YofTextArea + (caretLine - FirstVisibleLine) * GetLineSpaceAvg();
 				
 				// draw underline to current line
 				DrawUnderLine( g, caretPosY, ColorScheme.HighlightColor );

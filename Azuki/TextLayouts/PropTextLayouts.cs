@@ -27,7 +27,7 @@ namespace Sgry.Azuki.TextLayouts
 
 			// set value for when the columnIndex is 0
 			pos.X = 0;
-    	    pos.Y = (lcPos.LineIndex * _View.LineSpacing) + (_View.LinePadding >> 1);
+    	    pos.Y = (lcPos.LineIndex * _View.GetLineSpaceAvg()) + (_View.LinePadding >> 1);
 
 			// if the location is not the head of the line, calculate x-coord.
 			if( 0 < lcPos.ColumnIndex )
@@ -47,7 +47,7 @@ namespace Sgry.Azuki.TextLayouts
 			int drawableTextLen;
 
 			// calc line index
-			lineIndex = (virPos.Y / _View.LineSpacing);
+			lineIndex = (virPos.Y / _View.GetLineSpaceAvg());
 			if( lineIndex < 0 )
 			{
 				lineIndex = 0;

@@ -223,9 +223,9 @@ namespace Sgry.Azuki
 			// then, invalidate that rectangle
 			invalidRect = new Rectangle(
 					0,
-					firstBeginPos.Y - LineSpacing,
+					firstBeginPos.Y - GetLineSpaceFromNumber(firstBegin),
 					VisibleSize.Width,
-					(lastEndPos.Y - firstBeginPos.Y) + (LineSpacing * 3) // 3 ... a line above, the line, and a line below
+					(lastEndPos.Y - firstBeginPos.Y) + (GetLineSpaceFromNumber(firstBegin) * 3) // 3 ... a line above, the line, and a line below
 				);
 			Invalidate( invalidRect );
 		}
@@ -257,7 +257,7 @@ namespace Sgry.Azuki
 
 			// calculate width of invalid rectangle
 			rect.Width = MeasureTokenEndX( g, new TextSegment(beginLineHead, end), 0 ) - rect.X;
-			rect.Height = LineSpacing;
+			rect.Height = GetLineSpaceFromNumber(beginL);
 
 			// invalidate
 			rect.X -= (ScrollPosX - XofTextArea);
@@ -342,7 +342,7 @@ namespace Sgry.Azuki
 				rect.X = left;
 				rect.Y = YofLine( beginL );
 				rect.Width = right - left;
-				rect.Height = LineSpacing;
+				rect.Height = GetLineSpaceFromNumber(beginL);
 
 				Invalidate( rect );
 			}
@@ -393,7 +393,7 @@ namespace Sgry.Azuki
 				invalidRect1.X = invalidStartPos.X;
 				invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
 				invalidRect1.Y = invalidStartPos.Y - (LinePadding >> 1);
-				invalidRect1.Height = LineSpacing;
+				invalidRect1.Height = GetLineSpaceFromNumber(GetLineIndexFromCharIndex(invalidStartIndex));
 
 				// invalidate all lines below caret
 				// if old text or new text contains multiple lines
@@ -495,7 +495,7 @@ namespace Sgry.Azuki
 
 			// calculate width and height of the invalid rect
 			rect.Width = MeasureTokenEndX( g, new TextSegment(begin, end), rect.X ) - rect.X;
-			rect.Height = LineSpacing;
+			rect.Height = GetLineIndexFromCharIndex(beginL);
 			Debug.Assert( 0 <= rect.Width );
 
 			// invalidate
@@ -529,7 +529,7 @@ namespace Sgry.Azuki
 						  - (ScrollPosX - XofTextArea);
 				upper.Y = YofLine( beginLine );
 				upper.Width = VisibleSize.Width - upper.X;
-				upper.Height = LineSpacing;
+                upper.Height = GetLineSpaceFromNumber(beginLine);
 			}
 
 			// calculate lower part of the invalid area
@@ -539,7 +539,7 @@ namespace Sgry.Azuki
 				lower.X = XofTextArea;
 				lower.Y = YofLine( endLine );
 				lower.Width = MeasureTokenEndX( g, new TextSegment(endLineHead, end), 0 ) - ScrollPosX;
-				lower.Height = LineSpacing;
+				lower.Height = GetLineSpaceFromNumber(endLine);
 			}
 
 			// calculate middle part of the invalid area
@@ -606,17 +606,10 @@ namespace Sgry.Azuki
 			g.SetClipRect( clipRect );
 			pos.X = -(ScrollPosX - XofTextArea);
 			pos.Y = YofTextArea;
-            var lp = LinePadding;
             for (int i = FirstVisibleLine; i < LineCount; i++)
 			{
-                if (pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y + LineSpacing)
+                if (pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y + GetLineSpaceFromNumber(i))
 				{
-                    if (IsInlineDiff && i % 2 == 1)
-                    {
-                        //g.FillRectangle(pos.X, pos.Y, clipRect.Right - pos.X, LineSpacing);
-                        LinePadding = 0;
-                    }
-                    // invoke pre-draw event
 					shouldRedraw1 = _UI.InvokeLineDrawing( g, i, pos );
 
 					// draw the line
@@ -631,20 +624,9 @@ namespace Sgry.Azuki
 					{
 						Invalidate( 0, clipRect.Y, VisibleSize.Width, clipRect.Height );
 					}
-                    LinePadding = lp;
                 }
-                if (IsInlineDiff && i % 2 == 0)
-                    pos.Y += LineHeight;
-                else
-                {
-                    g.FillRectangle(pos.X, pos.Y + LineHeight, clipRect.Right - pos.X, LinePadding);
-                    g.FillRectangle(XofLineNumberArea, pos.Y + LineHeight, LineNumAreaWidth, LinePadding);
-                    pos.Y += LineSpacing;
-                }
-
-                LinePadding = lp;
+                pos.Y += GetLineSpaceFromNumber(i);
             }
-            LinePadding = lp;
             g.RemoveClipRect();
 
 			// expand text area width for longest line
@@ -654,19 +636,10 @@ namespace Sgry.Azuki
 			g.BackColor = ColorScheme.BackColor;
 			g.FillRectangle( XofTextArea, pos.Y, VisibleSize.Width-XofTextArea, VisibleSize.Height-pos.Y );
             int n = 0;
-            for (int y = pos.Y; y < VisibleSize.Height; y += LineSpacing)
+            for (int y = pos.Y; y < VisibleSize.Height; y += GetLineSpaceFromNumber(n))
             {
                 DrawLeftOfLine(g, y, -1, false);
-                if (IsInlineDiff && n % 2 == 0)
-                {
-                    //g.BackColor = ColorScheme.BackColor;
-                    //g.FillRectangle(pos.X, y + LineHeight, clipRect.Right - pos.X, LinePadding * 2);
-                    //y -= LinePadding;
-                    //LinePadding = 0;
-                }
-                //LinePadding = lp;
             }
-            LinePadding = lp;
 
 			// flush drawing results BEFORE updating current line highlight
 			// because the highlight graphic can be drawn outside of the clipping rect
@@ -686,7 +659,7 @@ namespace Sgry.Azuki
 				{
 					// calculate position of the underline
 					int lineDiff = caretLine - FirstVisibleLine;
-					caretPosY = (lineDiff * LineSpacing) + YofTextArea;
+					caretPosY = (lineDiff * GetLineSpaceAvg()) + YofTextArea;
 					
 					// draw underline
 					DrawUnderLine( g, caretPosY, ColorScheme.HighlightColor );
@@ -782,12 +755,12 @@ namespace Sgry.Azuki
 					end = begin + token.Length;
 				}
 
-                var lp = LinePadding;
-                if (IsInlineDiff && lineIndex % 2 == 0)
-                    LinePadding = 0;
+                //var lp = LinePadding;
+                //if (IsInlineDiff && lineIndex % 2 == 0)
+                //    LinePadding = 0;
 				// draw this token
 				DrawToken( g, Document, begin, token, klass, ref pos, ref tokenEndPos, ref clipRect, inSelection );
-                LinePadding = lp;
+                //LinePadding = lp;
 
 			next_token:
 				// get next token
@@ -815,7 +788,7 @@ namespace Sgry.Azuki
 				if( pos.X < XofTextArea )
 					pos.X = XofTextArea;
 				g.BackColor = ColorScheme.BackColor;
-				g.FillRectangle( pos.X, pos.Y, clipRect.Right-pos.X, LineSpacing );
+				g.FillRectangle( pos.X, pos.Y, clipRect.Right-pos.X, GetLineSpaceFromNumber(lineIndex) );
 			}
 
 			// if this line is wider than the width of virtual space,

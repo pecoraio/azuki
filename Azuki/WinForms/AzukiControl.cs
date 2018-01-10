@@ -2229,9 +2229,9 @@ namespace Sgry.Azuki.WinForms
 			else if( scrollType == WinApi.SB_LINEDOWN )
 				newPos++;
 			else if( scrollType == WinApi.SB_PAGEUP )
-				newPos -= (ClientSize.Height / View.LineSpacing);
+				newPos -= (ClientSize.Height / View.GetLineSpaceAvg());
 			else if( scrollType == WinApi.SB_PAGEDOWN )
-				newPos += (ClientSize.Height / View.LineSpacing);
+				newPos += (ClientSize.Height / View.GetLineSpaceAvg());
 			else if( scrollType == WinApi.SB_TOP )
 				newPos = 0;
 			else if( scrollType == WinApi.SB_BOTTOM )

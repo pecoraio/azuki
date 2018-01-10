@@ -351,7 +351,7 @@ namespace Sgry.Azuki
 			rect.X = tokenPos.X;
 			rect.Y = tokenPos.Y + 1;
 			rect.Width = tokenEndPos.X - tokenPos.X;
-			rect.Height = LineSpacing - w - 2; // 1 == width of current line highlight
+			rect.Height = GetLineSpaceAvg() - w - 2; // 1 == width of current line highlight
 
 			// draw top line
 			g.FillRectangle( rect.Left, rect.Top, rect.Width, w );
@@ -385,7 +385,7 @@ namespace Sgry.Azuki
 			if( lineTopY < 0 )
 				return;
 
-			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
+			//DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
 
 			// calculate position to underline
 			int bottom = lineTopY + LineHeight + (LinePadding >> 1);
@@ -451,7 +451,6 @@ namespace Sgry.Azuki
 		/// <param name="drawsText">specify true if line number text should be drawn.</param>
 		protected void DrawLeftOfLine( IGraphics g, int lineTopY, int lineNumber, bool drawsText)
 		{
-            var ls = LineSpacing;
 			//DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
 			Point pos = new Point( XofLineNumberArea, lineTopY );
             //if (IsInlineDiff && lineNumber % 2 == 1)
