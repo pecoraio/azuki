@@ -565,15 +565,8 @@ namespace Sgry.Azuki
 			pos.Y = YofTextArea;
 			for( int i=FirstVisibleLine; i<LineCount; i++ )
 			{
-                var lp = LinePadding;
                 if (pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y + GetLineSpaceFromNumber(i))
 				{
-                    //if (IsInlineDiff && i % 2 == 1)
-                    //{
-                    //    g.FillRectangle(pos.X, pos.Y, clipRect.Right - pos.X, GetLineSpaceFromNumber(i));
-                    //    LinePadding = 0;
-                    //}
-
 					// reset x-coord of drawing position
 					pos.X = -(ScrollPosX - XofTextArea);
 
@@ -595,23 +588,15 @@ namespace Sgry.Azuki
 				}
                 pos.Y += GetLineSpaceFromNumber(i);
 
-                //if (IsInlineDiff && i % 2 == 0)
-                //    pos.Y += LineHeight;
-                //else
-                //{
-                //    g.FillRectangle(pos.X, pos.Y + LineHeight, clipRect.Right - pos.X, LinePadding);
-                //    pos.Y += LineSpacing;
-                //}
-                LinePadding = lp;
-
             }
 
 			// fill area below of the text
             g.BackColor = ColorScheme.BackColor;
 			g.FillRectangle( 0, pos.Y, VisibleSize.Width, VisibleSize.Height-pos.Y );
-            for (int y = pos.Y; y < VisibleSize.Height; y += LineSpacing)
+            int n = FirstVisibleLine + LineCount - 1;
+            for (int y = pos.Y; y < VisibleSize.Height; y += GetLineSpaceFromNumber(n++))
             {
-                DrawLeftOfLine(g, y, -1, false);
+                DrawLeftOfLine(g, y, -1, false, GetLineSpaceFromNumber(n));
 			}
 
 			// flush drawing results BEFORE updating current line highlight
@@ -638,7 +623,7 @@ namespace Sgry.Azuki
 				caretPosY = YofTextArea + (caretLine - FirstVisibleLine) * GetLineSpaceAvg();
 				
 				// draw underline to current line
-				DrawUnderLine( g, caretPosY, ColorScheme.HighlightColor );
+				DrawUnderLine( g, caretPosY, ColorScheme.HighlightColor ,caretLine%2==0);
 			}
 		}
 
@@ -683,7 +668,7 @@ namespace Sgry.Azuki
 					drawsText = ( Document.GetLineHeadIndex(lineIndexToDraw) == lineHead );
 				}
 
-				DrawLeftOfLine(g, pos.Y, lineIndexToDraw + 1, drawsText);
+                DrawLeftOfLine(g, pos.Y, lineIndexToDraw + 1, drawsText, GetLineSpaceFromNumber(lineIndex));
 				clipRect.Width -= (XofTextArea - clipRect.X);
 				clipRect.X = XofTextArea;
 			}
@@ -809,12 +794,12 @@ namespace Sgry.Azuki
 		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="color">Color to be used for drawing the underline.</param>
-		protected override void DrawUnderLine( IGraphics g, int lineTopY, Color color )
+		protected override void DrawUnderLine( IGraphics g, int lineTopY, Color color ,bool Padding)
 		{
 			if( lineTopY < 0 )
 				return;
 
-			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
+            DebugUtl.Assert((lineTopY % GetLineSpaceAvg()) == (YofTextArea % GetLineSpaceAvg()), "lineTopY:" + lineTopY + ", LineSpacing:" + GetLineSpaceAvg() + ", YofTextArea:" + YofTextArea);
 
 			// calculate position to underline
 			int bottom = lineTopY + LineHeight + (LinePadding >> 1);

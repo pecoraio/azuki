@@ -997,7 +997,7 @@ namespace Sgry.Azuki
         public int GetLineSpaceAvg()
         {
             if (IsInlineDiff)
-                return LineHeight + LineSpacing;
+                return (LineHeight+1 + LineSpacing)/2;
             else
                 return LineSpacing;
         }
@@ -1056,9 +1056,9 @@ namespace Sgry.Azuki
 
 			// calculate vertical offset to the position where we desire to scroll to
 			vDelta = 0;
-			if( threshRect.Bottom <= caretPos.Y )
+            var LineIndex = GetLineIndexFromCharIndex(Document.CaretIndex);
+            if (threshRect.Bottom <= caretPos.Y)
 			{
-                var LineIndex = GetLineIndexFromCharIndex(Document.CaretIndex);
 				// scroll down
 				vDelta = (caretPos.Y + GetLineSpaceFromNumber(LineIndex)) - threshRect.Bottom;
 			}
@@ -1069,7 +1069,7 @@ namespace Sgry.Azuki
 			}
 
 			// scroll the view
-            Scroll(vDelta / GetLineSpaceAvg());
+            Scroll(vDelta / GetLineSpaceFromNumber(LineIndex));
 			HScroll( hDelta );
 
 			// update horizontal ruler graphic.
@@ -1474,7 +1474,8 @@ namespace Sgry.Azuki
 					Document.GetSelection( out selBegin, out selEnd );
 					if( selBegin == selEnd )
 					{
-						DrawUnderLine( g, YofLine(GetLineIndexFromCharIndex(selBegin)), ColorScheme.HighlightColor );
+                        var LineIndex = GetLineIndexFromCharIndex(selBegin);
+						DrawUnderLine( g, YofLine(GetLineIndexFromCharIndex(selBegin)), ColorScheme.HighlightColor,LineIndex %2==0 );
 					}
 				}
 			}
@@ -1491,7 +1492,8 @@ namespace Sgry.Azuki
 					Document.GetSelection( out selBegin, out selEnd );
 					if( selBegin == selEnd )
 					{
-						DrawUnderLine( g, YofLine(GetLineIndexFromCharIndex(selBegin)), ColorScheme.BackColor );
+                        var LineIndex = GetLineIndexFromCharIndex(selBegin);
+                        DrawUnderLine(g, YofLine(GetLineIndexFromCharIndex(selBegin)), ColorScheme.BackColor, LineIndex % 2 == 0);
 					}
 				}
 			}

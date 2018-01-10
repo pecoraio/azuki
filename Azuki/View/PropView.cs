@@ -136,7 +136,7 @@ namespace Sgry.Azuki
 
 						GetLineColumnIndexFromCharIndex( e.OldCaret, out oldCaretLine, out oldCaretColumn );
 						oldCaretLineY = YofLine( oldCaretLine );
-						DrawUnderLine( g, oldCaretLineY, ColorScheme.BackColor );
+                        DrawUnderLine(g, oldCaretLineY, ColorScheme.BackColor, oldCaretLine % 2 == 0);
 					}
 
 					// if the change occured in a line?
@@ -185,14 +185,14 @@ namespace Sgry.Azuki
 			if( prevCaretLine == prevAnchorLine && FirstVisibleLine <= prevCaretLine )
 			{
 				int y = YofLine( prevCaretLine );
-				DrawUnderLine( g, y, ColorScheme.BackColor );
+                DrawUnderLine(g, y, ColorScheme.BackColor, oldCaretLine % 2 == 0);
 			}
 			
 			// draw new underline if it is visible
 			if( FirstVisibleLine <= newCaretLine )
 			{
 				int newCaretY = YofLine( newCaretLine );
-				DrawUnderLine( g, newCaretY, ColorScheme.HighlightColor );
+                DrawUnderLine(g, newCaretY, ColorScheme.HighlightColor, newCaretLine % 2 == 0);
 			}
 		}
 
@@ -225,7 +225,7 @@ namespace Sgry.Azuki
 					0,
 					firstBeginPos.Y - GetLineSpaceFromNumber(firstBegin),
 					VisibleSize.Width,
-					(lastEndPos.Y - firstBeginPos.Y) + (GetLineSpaceFromNumber(firstBegin) * 3) // 3 ... a line above, the line, and a line below
+					(lastEndPos.Y - firstBeginPos.Y) + (GetLineSpaceAvg() * 3) // 3 ... a line above, the line, and a line below
 				);
 			Invalidate( invalidRect );
 		}
@@ -635,10 +635,10 @@ namespace Sgry.Azuki
 			// fill area below of the text
 			g.BackColor = ColorScheme.BackColor;
 			g.FillRectangle( XofTextArea, pos.Y, VisibleSize.Width-XofTextArea, VisibleSize.Height-pos.Y );
-            int n = 0;
-            for (int y = pos.Y; y < VisibleSize.Height; y += GetLineSpaceFromNumber(n))
+            int n = FirstVisibleLine + LineCount -1;
+            for (int y = pos.Y; y < VisibleSize.Height; y += GetLineSpaceFromNumber(n++))
             {
-                DrawLeftOfLine(g, y, -1, false);
+                DrawLeftOfLine(g, y, -1, false, GetLineSpaceFromNumber(n));
             }
 
 			// flush drawing results BEFORE updating current line highlight
@@ -662,7 +662,7 @@ namespace Sgry.Azuki
 					caretPosY = (lineDiff * GetLineSpaceAvg()) + YofTextArea;
 					
 					// draw underline
-					DrawUnderLine( g, caretPosY, ColorScheme.HighlightColor );
+					DrawUnderLine( g, caretPosY, ColorScheme.HighlightColor ,caretLine%2==0);
 				}
 			}
 		}
@@ -755,12 +755,7 @@ namespace Sgry.Azuki
 					end = begin + token.Length;
 				}
 
-                //var lp = LinePadding;
-                //if (IsInlineDiff && lineIndex % 2 == 0)
-                //    LinePadding = 0;
-				// draw this token
 				DrawToken( g, Document, begin, token, klass, ref pos, ref tokenEndPos, ref clipRect, inSelection );
-                //LinePadding = lp;
 
 			next_token:
 				// get next token
@@ -806,7 +801,7 @@ namespace Sgry.Azuki
 			}
 
 			// draw graphics at left of text
-			DrawLeftOfLine(g, pos.Y, lineIndex + 1, true);
+            DrawLeftOfLine(g, pos.Y, lineIndex + 1, true, GetLineSpaceFromNumber(lineIndex));
 		}
 		#endregion
 	}
