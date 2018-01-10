@@ -568,7 +568,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
-		public override void Paint(IGraphics g, Rectangle clipRect, bool IsInlineDiff)
+		public override void Paint(IGraphics g, Rectangle clipRect)
 		{
 			// [*1] if the graphic of a line should be redrawn by owner draw,
 			// Azuki does not redraw the line but invalidate
@@ -606,15 +606,21 @@ namespace Sgry.Azuki
 			g.SetClipRect( clipRect );
 			pos.X = -(ScrollPosX - XofTextArea);
 			pos.Y = YofTextArea;
-			for( int i=FirstVisibleLine; i<LineCount; i++ )
+            var lp = LinePadding;
+            for (int i = FirstVisibleLine; i < LineCount; i++)
 			{
-				if( pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y+LineSpacing )
+                if (pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y + LineSpacing)
 				{
-					// invoke pre-draw event
+                    if (IsInlineDiff && i % 2 == 1)
+                    {
+                        //g.FillRectangle(pos.X, pos.Y, clipRect.Right - pos.X, LineSpacing);
+                        LinePadding = 0;
+                    }
+                    // invoke pre-draw event
 					shouldRedraw1 = _UI.InvokeLineDrawing( g, i, pos );
 
 					// draw the line
-                    DrawLine(g, i, pos, clipRect, ref longestLineLength, IsInlineDiff);
+                    DrawLine(g, i, pos, clipRect, ref longestLineLength);
 
 					// invoke post-draw event
 					shouldRedraw2 = _UI.InvokeLineDrawn( g, i, pos );
@@ -625,10 +631,21 @@ namespace Sgry.Azuki
 					{
 						Invalidate( 0, clipRect.Y, VisibleSize.Width, clipRect.Height );
 					}
-				}
-				pos.Y += LineSpacing;
-			}
-			g.RemoveClipRect();
+                    LinePadding = lp;
+                }
+                if (IsInlineDiff && i % 2 == 0)
+                    pos.Y += LineHeight;
+                else
+                {
+                    g.FillRectangle(pos.X, pos.Y + LineHeight, clipRect.Right - pos.X, LinePadding);
+                    g.FillRectangle(XofLineNumberArea, pos.Y + LineHeight, LineNumAreaWidth, LinePadding);
+                    pos.Y += LineSpacing;
+                }
+
+                LinePadding = lp;
+            }
+            LinePadding = lp;
+            g.RemoveClipRect();
 
 			// expand text area width for longest line
 			ReCalcRightEndOfTextArea( longestLineLength );
@@ -636,10 +653,20 @@ namespace Sgry.Azuki
 			// fill area below of the text
 			g.BackColor = ColorScheme.BackColor;
 			g.FillRectangle( XofTextArea, pos.Y, VisibleSize.Width-XofTextArea, VisibleSize.Height-pos.Y );
-			for( int y=pos.Y; y<VisibleSize.Height; y+=LineSpacing )
-			{
-				DrawLeftOfLine(g, y, -1, false, IsInlineDiff);
-			}
+            int n = 0;
+            for (int y = pos.Y; y < VisibleSize.Height; y += LineSpacing)
+            {
+                DrawLeftOfLine(g, y, -1, false);
+                if (IsInlineDiff && n % 2 == 0)
+                {
+                    //g.BackColor = ColorScheme.BackColor;
+                    //g.FillRectangle(pos.X, y + LineHeight, clipRect.Right - pos.X, LinePadding * 2);
+                    //y -= LinePadding;
+                    //LinePadding = 0;
+                }
+                //LinePadding = lp;
+            }
+            LinePadding = lp;
 
 			// flush drawing results BEFORE updating current line highlight
 			// because the highlight graphic can be drawn outside of the clipping rect
@@ -667,7 +694,7 @@ namespace Sgry.Azuki
 			}
 		}
 
-		void DrawLine( IGraphics g, int lineIndex, Point pos, Rectangle clipRect, ref int longestLineLength ,bool IsInlineDiff)
+		void DrawLine( IGraphics g, int lineIndex, Point pos, Rectangle clipRect, ref int longestLineLength )
 		{
 			// note that given pos is NOT virtual position BUT screen position.
 			string token;
@@ -755,8 +782,12 @@ namespace Sgry.Azuki
 					end = begin + token.Length;
 				}
 
+                var lp = LinePadding;
+                if (IsInlineDiff && lineIndex % 2 == 0)
+                    LinePadding = 0;
 				// draw this token
 				DrawToken( g, Document, begin, token, klass, ref pos, ref tokenEndPos, ref clipRect, inSelection );
+                LinePadding = lp;
 
 			next_token:
 				// get next token
@@ -802,7 +833,7 @@ namespace Sgry.Azuki
 			}
 
 			// draw graphics at left of text
-			DrawLeftOfLine(g, pos.Y, lineIndex + 1, true, IsInlineDiff);
+			DrawLeftOfLine(g, pos.Y, lineIndex + 1, true);
 		}
 		#endregion
 	}

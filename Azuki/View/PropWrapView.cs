@@ -277,8 +277,8 @@ namespace Sgry.Azuki
 			bottom.Y -= (LinePadding >> 1);
 
 			// overdraw dirt bar
-			for( int y=top.Y; y<bottom.Y; y+=LineSpacing )
-			{
+            for (int y = top.Y; y < bottom.Y; y += LineSpacing)
+            {
 				DrawDirtBar( g, y, logLineIndex );
 			}
 		}
@@ -532,7 +532,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
-		public override void Paint(IGraphics g, Rectangle clipRect, bool IsInlineDiff)
+		public override void Paint(IGraphics g, Rectangle clipRect)
 		{
 			Debug.Assert( FontInfo != null, "invalid state; FontInfo is null" );
 			Debug.Assert( Document != null, "invalid state; Document is null" );
@@ -564,8 +564,15 @@ namespace Sgry.Azuki
 			pos.Y = YofTextArea;
 			for( int i=FirstVisibleLine; i<LineCount; i++ )
 			{
-				if( pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y+LineSpacing )
+                var lp = LinePadding;
+                if (pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y + LineSpacing)
 				{
+                    if (IsInlineDiff && i % 2 == 1)
+                    {
+                        g.FillRectangle(pos.X, pos.Y, clipRect.Right - pos.X, LineSpacing);
+                        LinePadding = 0;
+                    }
+
 					// reset x-coord of drawing position
 					pos.X = -(ScrollPosX - XofTextArea);
 
@@ -585,15 +592,23 @@ namespace Sgry.Azuki
 						Invalidate( 0, clipRect.Y, VisibleSize.Width, clipRect.Height );
 					}
 				}
-				pos.Y += LineSpacing;
-			}
+                if (IsInlineDiff && i % 2 == 0)
+                    pos.Y += LineHeight;
+                else
+                {
+                    g.FillRectangle(pos.X, pos.Y + LineHeight, clipRect.Right - pos.X, LinePadding);
+                    pos.Y += LineSpacing;
+                }
+                LinePadding = lp;
+
+            }
 
 			// fill area below of the text
-			g.BackColor = ColorScheme.BackColor;
+            g.BackColor = ColorScheme.BackColor;
 			g.FillRectangle( 0, pos.Y, VisibleSize.Width, VisibleSize.Height-pos.Y );
-			for( int y=pos.Y; y<VisibleSize.Height; y+=LineSpacing )
-			{
-				DrawLeftOfLine(g, y, -1, false, IsInlineDiff);
+            for (int y = pos.Y; y < VisibleSize.Height; y += LineSpacing)
+            {
+                DrawLeftOfLine(g, y, -1, false);
 			}
 
 			// flush drawing results BEFORE updating current line highlight
@@ -665,7 +680,7 @@ namespace Sgry.Azuki
 					drawsText = ( Document.GetLineHeadIndex(lineIndexToDraw) == lineHead );
 				}
 
-				DrawLeftOfLine(g, pos.Y, lineIndexToDraw + 1, drawsText, IsInlineDiff);
+				DrawLeftOfLine(g, pos.Y, lineIndexToDraw + 1, drawsText);
 				clipRect.Width -= (XofTextArea - clipRect.X);
 				clipRect.X = XofTextArea;
 			}

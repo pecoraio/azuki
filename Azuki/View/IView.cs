@@ -638,6 +638,8 @@ namespace Sgry.Azuki
 		{
 			get; set;
 		}
+        bool IsInlineDiff { get; set; }
+
 		#endregion
 
 		#region Coordinates of Graphical Parts

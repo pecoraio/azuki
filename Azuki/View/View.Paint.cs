@@ -16,7 +16,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
-        public abstract void Paint(IGraphics g, Rectangle clipRect, bool IsInlineDiff);
+        public abstract void Paint(IGraphics g, Rectangle clipRect);
 
 		#region Drawing graphical units of view
 		/// <summary>
@@ -405,7 +405,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		protected void DrawDirtBar( IGraphics g, int lineTopY, int logicalLineIndex )
 		{
-			Debug.Assert( ((lineTopY-YofTextArea) % LineSpacing) == 0, "((lineTopY-YofTextArea) % LineSpacing) is not 0 but " + (lineTopY-YofTextArea) % LineSpacing );
+			//Debug.Assert( ((lineTopY-YofTextArea) % LineSpacing) == 0, "((lineTopY-YofTextArea) % LineSpacing) is not 0 but " + (lineTopY-YofTextArea) % LineSpacing );
 			LineDirtyState dirtyState;
 			Color backColor;
 
@@ -449,29 +449,35 @@ namespace Sgry.Azuki
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="lineNumber">line number to be drawn.</param>
 		/// <param name="drawsText">specify true if line number text should be drawn.</param>
-		protected void DrawLeftOfLine( IGraphics g, int lineTopY, int lineNumber, bool drawsText ,bool InlineDiff=false)
+		protected void DrawLeftOfLine( IGraphics g, int lineTopY, int lineNumber, bool drawsText)
 		{
-			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
+            var ls = LineSpacing;
+			//DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
 			Point pos = new Point( XofLineNumberArea, lineTopY );
-			
-			// fill line number area
+            //if (IsInlineDiff && lineNumber % 2 == 1)
+            //    pos = new Point(XofLineNumberArea, lineTopY-LinePadding);
+
+            // fill line number area
 			if( ShowLineNumber )
 			{
 				g.BackColor = Utl.BackColorOfLineNumber( ColorScheme );
-				g.FillRectangle( XofLineNumberArea, pos.Y, LineNumAreaWidth, LineSpacing );
-			}
+                //    pos.Y -= LinePadding;
+                g.FillRectangle(XofLineNumberArea, pos.Y, LineNumAreaWidth, LineSpacing);
+                //if (IsInlineDiff && lineNumber % 2 == 0)
+                //    g.FillRectangle(XofLineNumberArea, pos.Y+LineSpacing, LineNumAreaWidth, LinePadding+2);
+            }
 
 			// fill dirt bar
 			if( ShowsDirtBar )
 			{
-				DrawDirtBar( g, lineTopY, lineNumber-1 );
+				DrawDirtBar( g, pos.Y, lineNumber-1 );
 			}
 			
 			// fill left margin area
 			if( 0 < LeftMargin )
 			{
 				g.BackColor = ColorScheme.BackColor;
-				g.FillRectangle( XofLeftMargin, pos.Y, LeftMargin, LineSpacing );
+                g.FillRectangle(XofLeftMargin, pos.Y, LeftMargin, LineSpacing);
 			}
 			
 			// draw line number text
@@ -481,23 +487,23 @@ namespace Sgry.Azuki
 				Point textPos;
 
 				// calculate text position
-                if (InlineDiff)
+                if (IsInlineDiff)
     				lineNumText = ((lineNumber+1)/2).ToString();
                 else
                     lineNumText = lineNumber.ToString();
 
                 pos.X = XofDirtBar - g.MeasureText(lineNumText).Width - LineNumberAreaPadding;
 				textPos = pos;
-				textPos.Y += (LinePadding >> 1);
+                textPos.Y += (LinePadding >> 1);
 
 				// draw text
-                if (!InlineDiff || lineNumber % 2 ==1)
+                if (!IsInlineDiff || lineNumber % 2 == 1)
 				    g.DrawText( lineNumText, ref textPos, Utl.ForeColorOfLineNumber(ColorScheme) );
 			}
 
 			// draw margin line between the line number area and text area
 			if( ShowLineNumber || ShowsDirtBar )
-			{
+            {
 				pos.X = XofLeftMargin - 1;
 				g.ForeColor = Utl.ForeColorOfLineNumber( ColorScheme );
 				g.DrawLine( pos.X, pos.Y, pos.X, pos.Y+LineSpacing );

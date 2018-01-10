@@ -1179,7 +1179,11 @@ namespace Sgry.Azuki.WinForms
         public bool IsInlineDiff 
         {
             get { return _Impl.IsInlineDiff; }
-            set { _Impl.IsInlineDiff = value; }
+            set 
+            {
+                _Impl.IsInlineDiff = value;
+                View.IsInlineDiff = value;
+            }
         }
 
 		/// <summary>

@@ -109,6 +109,7 @@ namespace Sgry.Azuki
 				//DO_NOT//this._UI = other._UI;
 				this._VisibleSize = other._VisibleSize;
 
+                this.IsInlineDiff = other.IsInlineDiff;
 				// set Font through property
 				if( other.FontInfo != null )
 					this.FontInfo = other.FontInfo;
@@ -147,6 +148,7 @@ namespace Sgry.Azuki
 		{
 			get{ return Layout.GetLineCount(); }
 		}
+        public virtual bool IsInlineDiff { get; set; }
 
 		/// <summary>
 		/// Gets or sets width of the virtual text area (line number area is not included).
@@ -1004,14 +1006,14 @@ namespace Sgry.Azuki
 
 			// make rentangle of virtual text view
 			threshRect.X = ScrollPosX + SpaceWidthInPx;
-			threshRect.Y = FirstVisibleLine * LineSpacing;
+            threshRect.Y = FirstVisibleLine * LineSpacing;
 			threshRect.Width = (_VisibleSize.Width - XofTextArea) - (SpaceWidthInPx * 2);
 			threshRect.Height = (_VisibleSize.Height - YofTextArea) - LineSpacing;
 
 			// shrink the rectangle if some lines must be visible
 			if( 0 < autoScrollMargin )
 			{
-				int yMargin = Math.Max( 0, autoScrollMargin * LineSpacing );
+                int yMargin = Math.Max(0, autoScrollMargin *  LineSpacing);
 				threshRect.Y += yMargin;
 				threshRect.Height -= (yMargin * 2);
 			}
@@ -1053,7 +1055,7 @@ namespace Sgry.Azuki
 			}
 
 			// scroll the view
-			Scroll( vDelta / LineSpacing );
+            Scroll(vDelta / LineSpacing);
 			HScroll( hDelta );
 
 			// update horizontal ruler graphic.

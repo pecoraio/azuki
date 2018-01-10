@@ -1,5 +1,7 @@
 ﻿using System;
+using Sgry.Azuki;
 using Sgry.Azuki.WinForms;
+
 #if USEING_NUNIT
 using Assert = NUnit.Framework.Assert;
 using TestClassAttribute = NUnit.Framework.TestFixtureAttribute;

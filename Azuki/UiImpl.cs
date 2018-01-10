@@ -185,6 +185,7 @@ namespace Sgry.Azuki
 						break;
 				}
 				_ViewType = value;
+                //_View.IsInlineDiff = IsInlineDiff;
 
 				// dispose old view object
 				if( oldView != null )
@@ -663,7 +664,7 @@ namespace Sgry.Azuki
 			// draw view graphic
 			using( var g = _UI.GetIGraphics() )
 			{
-				_View.Paint(g, clipRect, IsInlineDiff);
+				_View.Paint(g, clipRect);
 			}
 
 			// If any characters which were not highlighted after last edit were drawn,
