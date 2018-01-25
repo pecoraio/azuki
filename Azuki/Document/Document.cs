@@ -1283,7 +1283,11 @@ namespace Sgry.Azuki
 
 			return changed;
 		}
-
+        public void ClearMarks()
+        {
+            for (int i = 0; i < _Buffer.Count; i++)
+                _Buffer.Marks[i] = 0;
+        }
 		/// <summary>
 		/// Gets range of text part which includes specified index
 		/// which is marked with specified ID.
