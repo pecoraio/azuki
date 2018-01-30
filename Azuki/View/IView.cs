@@ -218,6 +218,8 @@ namespace Sgry.Azuki
 		{
 			get;
 		}
+        bool PaintSuspend { set; get; }
+
 		#endregion
 
 		#region Desired Column Management

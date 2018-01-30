@@ -149,6 +149,7 @@ namespace Sgry.Azuki
 			get{ return Layout.GetLineCount(); }
 		}
         public virtual bool IsInlineDiff { get; set; }
+        public bool PaintSuspend { set; get; }
 
 		/// <summary>
 		/// Gets or sets width of the virtual text area (line number area is not included).
@@ -236,6 +237,8 @@ namespace Sgry.Azuki
 
 		protected void UpdateMetrics( IGraphics g )
 		{
+            if (PaintSuspend)
+                return;
 			StringBuilder buf = new StringBuilder( 32 );
 			_LastUsedLineNumberSample = _LineNumberSamples[0];
 
@@ -1391,6 +1394,8 @@ namespace Sgry.Azuki
 		/// </summary>
 		internal virtual void HandleDocumentChanged( Document prevDocument )
 		{
+            if (PaintSuspend)
+                return;
 			using( IGraphics g = _UI.GetIGraphics() )
 			{
 				// reset width of line number area

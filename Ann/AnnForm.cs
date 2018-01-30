@@ -51,6 +51,7 @@ namespace Sgry.Ann
 			_TimerForDelayedActivatedEvent.Interval = 100;
 			_TimerForDelayedActivatedEvent.Tick += Form_DelayedActivated;
             _Azuki.IsInlineDiff = true;
+            _Azuki.SelectAlphaWithNum = true;
             _Azuki.ShowsHScrollBar = false;
 		}
 		#endregion

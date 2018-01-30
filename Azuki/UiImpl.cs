@@ -898,6 +898,7 @@ namespace Sgry.Azuki
 				var clickedIndex = View.GetIndexFromVirPos( pos );
 				_UI.SelectionMode = TextDataType.Words;
 				Document.SetSelection( clickedIndex, clickedIndex, View );
+                View.Invalidate();
 			}
 		}
 

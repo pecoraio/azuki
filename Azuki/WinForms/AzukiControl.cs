@@ -1185,6 +1185,16 @@ namespace Sgry.Azuki.WinForms
                 View.IsInlineDiff = value;
             }
         }
+        /// <summary>
+        /// Same class Alphabets and digits
+        /// </summary>
+        [Browsable(true)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public bool SelectAlphaWithNum
+        {
+            get { return Document.SelectAlphaWithNum; }
+            set { Document.SelectAlphaWithNum = value; }
+        }
 
 		/// <summary>
 		/// Gets whether Azuki is in line selection mode or not.
@@ -2123,7 +2133,7 @@ namespace Sgry.Azuki.WinForms
 			if( Utl.IsClick(currentPos, _LastMouseDownPos) )
 			{
 				return;
-			}
+            }
 
 			WinFormsMouseEventArgs amea = Utl.CreateWinFormsMouseEventArgs( View, e );
 			base.OnMouseDoubleClick( amea );

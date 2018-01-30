@@ -691,14 +691,16 @@ namespace Sgry.Azuki
 				if( 0 <= index-1
 					&& ('0' <= doc[index-1] && doc[index-1] <= '9') )
 				{
-					if( index+1 < doc.Length && IsAlphabet(doc, index+1) )
-					{
-						return true;
-					}
-					else
-					{
-						return false;
-					}
+                    if (index + 1 < doc.Length && IsAlphabet(doc, index + 1))
+                    {
+                        return true;
+                    }
+                    else if (Document.SelectAlphaWithNum && index + 1 < doc.Length && IsDigit(doc, index + 1))
+                        return true;
+                    else
+                    {
+                        return false;
+                    }
 				}
 			}
 
@@ -709,7 +711,14 @@ namespace Sgry.Azuki
 				return true;
 			if( 0xff41 <= ch && ch <= 0xff5a ) // full-width alphabets (2)
 				return true;
+            if (Document.SelectAlphaWithNum)
+            {
+                if (0x30 <= ch && ch <= 0x39) // half-width digits
+                    return true;
+                if (0xff10 <= ch && ch <= 0xff19) // full-width digits
+                    return true;
 
+            }
 			return false;
 		};
 
@@ -747,6 +756,18 @@ namespace Sgry.Azuki
 			if( 0xff10 <= ch && ch <= 0xff19 ) // full-width digits
 				return true;
 
+            if (Document.SelectAlphaWithNum)
+            {
+                if (((int)ch) < CodeTable.Length && CodeTable[(int)ch] == 1)
+                    return true;
+
+                if (0xff21 <= ch && ch <= 0xff3a) // full-width alphabets (1)
+                    return true;
+                if (0xff41 <= ch && ch <= 0xff5a) // full-width alphabets (2)
+                    return true;
+
+            }
+
 			// dot for decimals
 			if( ch == 0x2e )
 			{
@@ -764,14 +785,16 @@ namespace Sgry.Azuki
 				char ch2 = doc[ index-1 ];
 				if( '0' <= ch2 && ch2 <= '9' )
 				{
-					if( index+1 < doc.Length && IsAlphabet(doc, index+1) )
-					{
-						return false;
-					}
-					else
-					{
-						return true;
-					}
+                    if (index + 1 < doc.Length && IsAlphabet(doc, index + 1))
+                    {
+                        return false;
+                    }
+                    else if (index + 1 < doc.Length && Document.SelectAlphaWithNum && IsDigit(doc, index + 1))
+                        return false;
+                    else
+                    {
+                        return true;
+                    }
 				}
 			}
 

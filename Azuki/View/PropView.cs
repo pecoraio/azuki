@@ -70,6 +70,8 @@ namespace Sgry.Azuki
 		#region Appearance Invalidating and Updating
 		internal override void HandleSelectionChanged( object sender, SelectionChangedEventArgs e )
 		{
+            if (PaintSuspend)
+                return;
 			Debug.Assert( TextUtil.IsDividableIndex(Document.InternalBuffer, e.OldAnchor) );
 			Debug.Assert( TextUtil.IsDividableIndex(Document.InternalBuffer, e.OldCaret) );
 			Document doc = Document;
@@ -354,6 +356,8 @@ namespace Sgry.Azuki
 
 		internal override void HandleContentChanged( object sender, ContentChangedEventArgs e )
 		{
+            if (PaintSuspend)
+                return;
 			// [*1] if replacement breaks or creates
 			// a combining character sequence at left boundary of the range,
 			// at least one grapheme cluster left must be redrawn.
@@ -441,6 +445,8 @@ namespace Sgry.Azuki
 		/// <param name="endIndex">End text index of the area to be invalidated.</param>
 		public override void Invalidate( IGraphics g, int beginIndex, int endIndex )
 		{
+            if (PaintSuspend)
+                return;
 			DebugUtl.Assert( 0 <= beginIndex, "cond: 0 <= beginIndex("+beginIndex+")" );
 			DebugUtl.Assert( beginIndex <= endIndex, "cond: beginIndex("+beginIndex+") <= endIndex("+endIndex+")" );
 			DebugUtl.Assert( endIndex <= Document.Length, "endIndex("+endIndex+") must not exceed document length ("+Document.Length+")" );
@@ -505,6 +511,9 @@ namespace Sgry.Azuki
 
 		void Invalidate_MultiLines( IGraphics g, int begin, int end, int beginLine, int endLine, int beginLineHead, int endLineHead )
 		{
+            if (PaintSuspend)
+                return;
+
 			DebugUtl.Assert( g != null, "null was given to PropView.Invalidate_MultiLines." );
 			DebugUtl.Assert( 0 <= begin, "cond: 0 <= begin("+begin+")" );
 			DebugUtl.Assert( begin <= end, "cond: begin("+begin+") <= end("+end+")" );
@@ -570,6 +579,9 @@ namespace Sgry.Azuki
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
 		public override void Paint(IGraphics g, Rectangle clipRect)
 		{
+            if (PaintSuspend)
+                return;
+
 			// [*1] if the graphic of a line should be redrawn by owner draw,
 			// Azuki does not redraw the line but invalidate
 			// the area of the line and let it be drawn on next drawing chance

@@ -2952,6 +2952,11 @@ namespace Sgry.Azuki
 			}
 			return false;
 		}
+        /// <summary>
+        /// 
+        /// </summary>
+        public static bool SelectAlphaWithNum { get; set; }
+
 		#endregion
 	}
 
