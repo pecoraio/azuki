@@ -380,6 +380,7 @@ namespace Sgry.Azuki
 		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="color">Color to be used for drawing the underline.</param>
+        /// <param name="Padding"></param>
 		protected virtual void DrawUnderLine( IGraphics g, int lineTopY, Color color ,bool Padding)
 		{
 			if( lineTopY < 0 )
@@ -450,6 +451,7 @@ namespace Sgry.Azuki
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="lineNumber">line number to be drawn.</param>
 		/// <param name="drawsText">specify true if line number text should be drawn.</param>
+        /// <param name="lineSpacing"></param>
 		protected void DrawLeftOfLine( IGraphics g, int lineTopY, int lineNumber, bool drawsText,int lineSpacing)
 		{
 			//DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );

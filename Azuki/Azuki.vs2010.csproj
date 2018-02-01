@@ -33,6 +33,7 @@
     <NoStdLib>false</NoStdLib>
     <NoConfig>true</NoConfig>
     <DocumentationFile>bin\Debug\AzukiF.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -47,6 +48,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Release\AzukiF.xml</DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -157,4 +159,8 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetDir)* $(TargetDir)..\*
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>

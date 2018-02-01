@@ -794,6 +794,7 @@ namespace Sgry.Azuki
 		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="color">Color to be used for drawing the underline.</param>
+        /// <param name="Padding"></param>
 		protected override void DrawUnderLine( IGraphics g, int lineTopY, Color color ,bool Padding)
 		{
 			if( lineTopY < 0 )
