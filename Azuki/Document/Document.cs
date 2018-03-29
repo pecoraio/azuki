@@ -19,7 +19,7 @@ namespace Sgry.Azuki
 	public class Document : IEnumerable<char>
 	{
 		#region Fields
-		readonly TextBuffer _Buffer = new TextBuffer(4096, 1024);
+		readonly TextBuffer _Buffer = new TextBuffer(8192, 8192);
 		readonly SplitArray<int> _LHI = new SplitArray<int>(64); // line head indexes
 		readonly SplitArray<LineDirtyState> _LDS = new SplitArray<LineDirtyState>(64);
 													// LDS = Line Dirty States
